@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="it" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>KANZA 30 | Ultimate Birthday Travel Search</title>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        gold: {
+                            300: '#FDE047',
+                            400: '#FACC15',
+                            500: '#EAB308',
+                            600: '#CA8A04'
+                        },
+                        brand: {
+                            dark: '#070913',
+                            card: 'rgba(15, 23, 42, 0.75)',
+                            purple: '#A855F7',
+                            pink: '#EC4899',
+                            cyan: '#06B6D4'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Poppins', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                        mono: ['JetBrains Mono', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Playfair+Display:ital,wght@0,600;0,800;1,400&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Canvas Confetti Library -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <style>
+        /* Base Reset & Smooth Scroll */
+        html {
+            scroll-behavior: smooth;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #05070f;
+            color: #f8fafc;
+            overflow-x: hidden;
+        }
+
+        /* Glassmorphism Styles */
+        .glass-panel {
+            background: rgba(15, 23, 42, 0.65);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 215, 0, 0.15);
+        }
+
+        .glass-card {
+            background: rgba(11, 17, 32, 0.8);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .glass-card:hover, .glass-card:active {
+            transform: translateY(-8px) scale(1.01);
+            border-color: rgba(234, 179, 8, 0.5);
+            box-shadow: 0 20px 35px -10px rgba(168, 85, 247, 0.35);
+        }
+
+        /* Gradients */
+        .text-gradient-gold {
+            background: linear-gradient(135deg, #FFF5C0 0%, #EAB308 50%, #B45309 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .text-gradient-neon {
+            background: linear-gradient(135deg, #FACC15 0%, #EC4899 50%, #A855F7 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Particles Background Canvas */
+        #particles-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Radar Animation */
+        .radar-sweep {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: conic-gradient(from 0deg at 50% 50%, rgba(234, 179, 8, 0.4) 0deg, transparent 60deg, transparent 360deg);
+            animation: spin 2s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* Floating effect */
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .animate-float {
+            animation: float 4s ease-in-out infinite;
+        }
+
+        /* Pulse Gold Ring */
+        .glow-gold {
+            box-shadow: 0 0 25px rgba(234, 179, 8, 0.35);
+        }
+
+        /* Hide Scrollbar */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="min-h-screen text-slate-100 relative selection:bg-amber-500 selection:text-black">
+
+    <!-- Interactive Gold/Neon Particle Canvas -->
+    <canvas id="particles-canvas"></canvas>
+
+    <!-- Header Navigation -->
+    <header class="fixed top-0 left-0 w-full z-50 glass-panel border-b border-amber-500/20 px-4 py-3 sm:px-8">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-amber-400 via-pink-500 to-purple-600 flex items-center justify-center font-bold text-slate-950 shadow-lg shadow-amber-500/30">
+                    K30
+                </div>
+                <div>
+                    <span class="font-serif font-extrabold text-lg sm:text-xl tracking-wider text-gradient-gold block">KANZA 30</span>
+                    <span class="text-[9px] uppercase tracking-widest text-slate-400 block -mt-1">Birthday Search Edition</span>
+                </div>
+            </div>
+
+            <div class="flex items-center space-x-3">
+                <a href="#tech-guide" class="text-xs px-3.5 py-1.5 rounded-full bg-slate-900/90 text-amber-300 border border-amber-500/30 hover:bg-amber-500 hover:text-black transition duration-300 font-medium flex items-center gap-1.5 shadow-md">
+                    <i class="fa-solid fa-code text-xs"></i> <span class="hidden sm:inline">Guida</span> iPhone/Tech
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="relative z-10 pt-24 pb-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-16">
+
+        <!-- HERO & COUNTDOWN SECTION -->
+        <section class="text-center space-y-8 pt-4 sm:pt-8">
+            <!-- Badge -->
+            <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-amber-500/10 via-pink-500/10 to-purple-500/10 border border-amber-500/40 glow-gold">
+                <i class="fa-solid fa-crown text-amber-400 text-sm animate-bounce"></i>
+                <span class="text-xs sm:text-sm font-semibold tracking-wide text-amber-300">Offerte Esclusive per i 30 Anni di Kanza</span>
+            </div>
+
+            <!-- Title -->
+            <div class="space-y-3">
+                <h1 class="text-4xl sm:text-6xl md:text-7xl font-extrabold tracking-tight font-serif leading-tight">
+                    KANZA 30th EDITION <br />
+                    <span class="text-gradient-neon">Destination Unknown</span>
+                </h1>
+                <p class="max-w-2xl mx-auto text-sm sm:text-lg text-slate-300 font-light leading-relaxed">
+                    Il conto alla rovescia per il viaggio dei 30 anni Ã¨ iniziato! Trova la rotta perfetta per celebrare il compleanno di Kanza il <strong class="text-amber-400 font-semibold">22 Maggio</strong>.
+                </p>
+            </div>
+
+            <!-- REAL COUNTDOWN TO MAY 22 -->
+            <div class="pt-2">
+                <div class="inline-block glass-panel p-4 sm:p-6 rounded-3xl border border-amber-500/30 shadow-2xl">
+                    <div class="text-xs uppercase tracking-widest text-amber-400 font-bold mb-3 flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-hourglass-half animate-spin text-amber-400"></i>
+                        <span>Tempo Rimanente al 22 Maggio</span>
+                    </div>
+
+                    <div class="grid grid-cols-4 gap-2 sm:gap-6 text-center">
+                        <!-- Days -->
+                        <div class="bg-slate-950/80 p-3 sm:p-5 rounded-2xl border border-slate-800 min-w-[65px] sm:min-w-[100px]">
+                            <span id="cd-days" class="block text-2xl sm:text-5xl font-extrabold text-amber-400 font-mono">00</span>
+                            <span class="text-[9px] sm:text-xs text-slate-400 uppercase font-semibold tracking-wider">Giorni</span>
+                        </div>
+                        <!-- Hours -->
+                        <div class="bg-slate-950/80 p-3 sm:p-5 rounded-2xl border border-slate-800 min-w-[65px] sm:min-w-[100px]">
+                            <span id="cd-hours" class="block text-2xl sm:text-5xl font-extrabold text-pink-400 font-mono">00</span>
+                            <span class="text-[9px] sm:text-xs text-slate-400 uppercase font-semibold tracking-wider">Ore</span>
+                        </div>
+                        <!-- Minutes -->
+                        <div class="bg-slate-950/80 p-3 sm:p-5 rounded-2xl border border-slate-800 min-w-[65px] sm:min-w-[100px]">
+                            <span id="cd-minutes" class="block text-2xl sm:text-5xl font-extrabold text-purple-400 font-mono">00</span>
+                            <span class="text-[9px] sm:text-xs text-slate-400 uppercase font-semibold tracking-wider">Minuti</span>
+                        </div>
+                        <!-- Seconds -->
+                        <div class="bg-slate-950/80 p-3 sm:p-5 rounded-2xl border border-slate-800 min-w-[65px] sm:min-w-[100px]">
+                            <span id="cd-seconds" class="block text-2xl sm:text-5xl font-extrabold text-cyan-400 font-mono">00</span>
+                            <span class="text-[9px] sm:text-xs text-slate-400 uppercase font-semibold tracking-wider">Secondi</span>
+                        </div>
+                    </div>
+
+                    <div class="mt-3 text-[11px] text-slate-400 italic">
+                        Data Obiettivo: <span id="target-date-display" class="text-slate-200 font-medium">22 Maggio</span> ð
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SEARCH ENGINE SECTION -->
+        <section class="glass-panel p-5 sm:p-8 rounded-3xl shadow-2xl border border-amber-500/30 relative overflow-hidden">
+            <div class="absolute -right-20 -bottom-20 w-72 h-72 bg-purple-600/20 rounded-full blur-3xl pointer-events-none"></div>
+            <div class="absolute -left-20 -top-20 w-72 h-72 bg-amber-500/20 rounded-full blur-3xl pointer-events-none"></div>
+
+            <div class="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-slate-800 pb-4">
+                <div class="flex items-center space-x-3">
+                    <div class="w-8 h-8 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center">
+                        <i class="fa-solid fa-plane-departure"></i>
+                    </div>
+                    <h2 class="text-xl font-bold text-white font-serif">Ricerca Viaggio Personalizzata per Kanza</h2>
+                </div>
+                <span class="text-xs px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-medium flex items-center gap-1.5">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Passaporto VIP Valido
+                </span>
+            </div>
+
+            <!-- Form -->
+            <form id="search-form" onsubmit="triggerSearch(event)" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <!-- Destinazione -->
+                <div class="space-y-1.5">
+                    <label class="text-xs text-slate-400 font-semibold uppercase tracking-wider flex items-center gap-1.5">
+                        <i class="fa-solid fa-earth-americas text-amber-400"></i> Destinazione
+                    </label>
+                    <select id="search-dest" class="w-full bg-slate-900/90 border border-slate-700 rounded-xl px-4 py-3 text-sm font-medium text-amber-300 focus:outline-none focus:border-amber-400 transition cursor-pointer">
+                        <option value="all">â¨ Tutte le Categorie VIP</option>
+                        <option value="tropical">ðï¸ Tropical Luxury & Relax</option>
+                        <option value="adventure">ð Adventure & Discovery</option>
+                        <option value="party">ð Party & City Lights</option>
+                        <option value="gourmet">ð· Gourmet & Wellness</option>
+                    </select>
+                </div>
+
+                <!-- Date -->
+                <div class="space-y-1.5">
+                    <label class="text-xs text-slate-400 font-semibold uppercase tracking-wider flex items-center gap-1.5">
+                        <i class="fa-solid fa-calendar-check text-pink-400"></i> Date Flessibili
+                    </label>
+                    <input type="text" value="Intorno al 22 Maggio" class="w-full bg-slate-900/90 border border-slate-700 rounded-xl px-4 py-3 text-sm font-medium text-slate-200 focus:outline-none focus:border-amber-400 transition" readonly>
+                </div>
+
+                <!-- Budget -->
+                <div class="space-y-1.5">
+                    <label class="text-xs text-slate-400 font-semibold uppercase tracking-wider flex items-center gap-1.5">
+                        <i class="fa-solid fa-wallet text-emerald-400"></i> Budget Esperienza
+                    </label>
+                    <select class="w-full bg-slate-900/90 border border-slate-700 rounded-xl px-4 py-3 text-sm font-medium text-slate-200 focus:outline-none focus:border-amber-400 transition cursor-pointer">
+                        <option>ð VIP Unlimited (30th Special)</option>
+                        <option>ð¥ Mid-Luxury Premium</option>
+                        <option>ð Smart & Wild Adventure</option>
+                    </select>
+                </div>
+
+                <!-- Passeggeri -->
+                <div class="space-y-1.5">
+                    <label class="text-xs text-slate-400 font-semibold uppercase tracking-wider flex items-center gap-1.5">
+                        <i class="fa-solid fa-user-astronaut text-purple-400"></i> Passeggero Principale
+                    </label>
+                    <input type="text" value="1 VIP (Kanza) + Friends" class="w-full bg-slate-900/90 border border-slate-700 rounded-xl px-4 py-3 text-sm font-medium text-purple-300 focus:outline-none focus:border-purple-400 transition" readonly>
+                </div>
+
+                <!-- Search Button -->
+                <div class="lg:col-span-4 pt-2">
+                    <button type="submit" class="w-full py-4 rounded-2xl bg-gradient-to-r from-amber-500 via-pink-500 to-purple-600 font-bold text-base sm:text-lg text-slate-950 shadow-xl hover:shadow-amber-500/25 active:scale-[0.99] transition transform duration-200 flex items-center justify-center gap-3">
+                        <i class="fa-solid fa-compass-drafting text-xl"></i>
+                        <span>Cerca Viaggio per i 30 Anni</span>
+                    </button>
+                </div>
+            </form>
+        </section>
+
+        <!-- RADAR & SCANNING MODAL OVERLAY -->
+        <div id="radar-modal" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+            <div class="max-w-md w-full glass-panel rounded-3xl p-6 sm:p-8 text-center space-y-6 border border-amber-500/40 relative overflow-hidden">
+                <div class="relative w-36 h-36 mx-auto flex items-center justify-center">
+                    <div class="absolute inset-0 rounded-full border border-amber-500/30"></div>
+                    <div class="absolute inset-4 rounded-full border border-amber-500/20"></div>
+                    <div class="absolute inset-10 rounded-full border border-amber-500/10"></div>
+                    <div class="radar-sweep"></div>
+                    <i class="fa-solid fa-plane text-3xl text-amber-400 animate-pulse relative z-10"></i>
+                </div>
+
+                <div class="space-y-2">
+                    <h3 class="text-xl font-bold text-white font-serif">Algoritmo Kanza30 in corso...</h3>
+                    <p id="radar-log" class="text-xs font-mono text-cyan-400 min-h-[3rem] px-2 leading-relaxed">Conressione ai server di scansione volo...</p>
+                </div>
+
+                <!-- Progress Bar -->
+                <div class="w-full bg-slate-900 rounded-full h-2.5 overflow-hidden border border-slate-800">
+                    <div id="radar-progress" class="bg-gradient-to-r from-amber-400 via-pink-500 to-purple-500 h-full w-0 transition-all duration-300"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4 MACRO CATEGORIES SECTION -->
+        <section class="space-y-6">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 border-b border-slate-800 pb-4">
+                <div>
+                    <span class="text-xs font-bold text-amber-400 tracking-widest uppercase">Selezione Unica</span>
+                    <h2 class="text-2xl sm:text-3xl font-extrabold font-serif text-white">4 Categorie Consigliate per Kanza</h2>
+                </div>
+
+                <!-- Category Pills -->
+                <div class="flex overflow-x-auto w-full md:w-auto gap-2 no-scrollbar pb-2 md:pb-0" id="cat-pills">
+                    <button onclick="filterTrips('all')" class="pill-btn active px-4 py-2 rounded-xl text-xs font-semibold bg-amber-500 text-slate-950 whitespace-nowrap transition">Tutte le Mete</button>
+                    <button onclick="filterTrips('tropical')" class="pill-btn px-4 py-2 rounded-xl text-xs font-semibold bg-slate-900 text-slate-300 hover:bg-slate-800 border border-slate-800 whitespace-nowrap transition">ðï¸ Tropical Luxury</button>
+                    <button onclick="filterTrips('adventure')" class="pill-btn px-4 py-2 rounded-xl text-xs font-semibold bg-slate-900 text-slate-300 hover:bg-slate-800 border border-slate-800 whitespace-nowrap transition">ð Adventure</button>
+                    <button onclick="filterTrips('party')" class="pill-btn px-4 py-2 rounded-xl text-xs font-semibold bg-slate-900 text-slate-300 hover:bg-slate-800 border border-slate-800 whitespace-nowrap transition">ð Party & City</button>
+                    <button onclick="filterTrips('gourmet')" class="pill-btn px-4 py-2 rounded-xl text-xs font-semibold bg-slate-900 text-slate-300 hover:bg-slate-800 border border-slate-800 whitespace-nowrap transition">ð· Gourmet & Spa</button>
+                </div>
+            </div>
+
+            <!-- TRIPS GRID -->
+            <div id="trips-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
+                <!-- Javascript standard cards generation -->
+            </div>
+        </section>
+
+        <!-- ITINERARY & BIRTHDAY MODAL -->
+        <div id="itinerary-modal" class="fixed inset-0 bg-slate-950/85 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+            <div class="max-w-lg w-full glass-panel rounded-3xl p-6 sm:p-8 text-center space-y-6 border border-amber-500/50 relative animate-float">
+                <button onclick="closeItineraryModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white text-xl">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+
+                <div class="w-20 h-20 bg-gradient-to-tr from-amber-400 via-pink-500 to-purple-600 rounded-full flex items-center justify-center mx-auto shadow-xl shadow-pink-500/30">
+                    <i class="fa-solid fa-gift text-3xl text-slate-950"></i>
+                </div>
+
+                <div class="space-y-2">
+                    <span class="text-xs uppercase tracking-widest font-bold text-amber-400">Itinerario Creato per i 30 Anni!</span>
+                    <h3 id="modal-title" class="text-2xl font-bold font-serif text-white">Titolo Destinazione</h3>
+                    <p id="modal-desc" class="text-slate-300 text-xs sm:text-sm leading-relaxed">Descrizione breve del programma di viaggio...</p>
+                </div>
+
+                <div class="p-4 rounded-2xl bg-slate-950/90 border border-slate-800 text-left space-y-2.5 font-sans">
+                    <div class="flex justify-between text-xs">
+                        <span class="text-slate-400">Passeggero Honoris Causa:</span>
+                        <span class="text-amber-300 font-bold">Kanza (30th Birthday)</span>
+                    </div>
+                    <div class="flex justify-between text-xs">
+                        <span class="text-slate-400">Data Partenza Consigliata:</span>
+                        <span class="text-pink-400 font-bold">22 Maggio</span>
+                    </div>
+                    <div class="flex justify-between text-xs">
+                        <span class="text-slate-400">Stato Pacchetto:</span>
+                        <span class="text-emerald-400 font-semibold">100% Personalizzato & Approvato</span>
+                    </div>
+                </div>
+
+                <div class="space-y-3 pt-2">
+                    <button onclick="fireConfetti()" class="w-full py-4 rounded-2xl bg-gradient-to-r from-amber-400 via-pink-500 to-purple-600 font-extrabold text-slate-950 hover:opacity-95 transition shadow-lg text-sm sm:text-base">
+                        ð Festeggia con i Coriandoli!
+                    </button>
+                    <button onclick="closeItineraryModal()" class="w-full py-2 text-xs font-semibold text-slate-400 hover:text-white transition">
+                        Chiudi e guarda altre destinazioni
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- TECH / IPHONE / SCRAPING GUIDE SECTION -->
+        <section id="tech-guide" class="glass-panel rounded-3xl p-6 sm:p-10 space-y-8 border border-slate-800">
+            <div class="text-center space-y-2">
+                <span class="text-xs font-bold text-cyan-400 tracking-widest uppercase">Architettura & Hosting</span>
+                <h2 class="text-2xl sm:text-3xl font-extrabold font-serif text-white">Guida Tecnica: iPhone, Hosting & API Scraping</h2>
+                <p class="text-slate-400 text-sm max-w-2xl mx-auto">Come far funzionare questo sito al 100% su iPhone e come integrare scraping/API reali di Skyscanner.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Guide Step 1 -->
+                <div class="p-5 rounded-2xl bg-slate-950/70 border border-slate-800 space-y-3">
+                    <div class="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center font-bold">1</div>
+                    <h3 class="font-bold text-white text-base">Come inviare ed aprire su iPhone</h3>
+                    <ul class="text-xs text-slate-300 space-y-2 leading-relaxed list-disc list-inside">
+                        <li><strong>Inviare il file HTML:</strong> PuÃ² essere inviato tramite AirDrop, Telegram o email e aperto direttamente in Safari/Chrome su iOS.</li>
+                        <li><strong>Hosting Gratuito Express:</strong> Trascina questo file <code class="text-amber-300">index.html</code> su <strong>Netlify Drop</strong> o <strong>Vercel</strong> per ottenere un link pubblico in 5 secondi (es. <em class="text-slate-400">kanza30.netlify.app</em>).</li>
+                        <li><strong>Localhost da PC a iPhone:</strong> Esegui <code class="text-amber-300">python -m http.server 8000</code> nel terminale e apri <em class="text-slate-400">http://&lt;IP-del-PC&gt;:8000</em> dallo smartphone connesso al Wi-Fi.</li>
+                    </ul>
+                </div>
+
+                <!-- Guide Step 2 -->
+                <div class="p-5 rounded-2xl bg-slate-950/70 border border-slate-800 space-y-3">
+                    <div class="w-10 h-10 rounded-xl bg-pink-500/20 text-pink-400 flex items-center justify-center font-bold">2</div>
+                    <h3 class="font-bold text-white text-base">Scraping Skyscanner & Booking</h3>
+                    <ul class="text-xs text-slate-300 space-y-2 leading-relaxed list-disc list-inside">
+                        <li><strong>Ostacoli Browser (CORS & Anti-Bot):</strong> Non Ã¨ possibile fare scraping diretto da JavaScript nel browser per via dei blocchi CORS e dei sistemi Cloudflare anti-bot.</li>
+                        <li><strong>Soluzione Backend (Python/Node):</strong> Si puÃ² creare uno script Python con <em class="text-pink-300">Playwright / Selenium</em> o librerie come <em class="text-pink-300">BeautifulSoup</em> per interrogare periodicamente Skyscanner e salvare i prezzi in un database/JSON.</li>
+                    </ul>
+                </div>
+
+                <!-- Guide Step 3 -->
+                <div class="p-5 rounded-2xl bg-slate-950/70 border border-slate-800 space-y-3">
+                    <div class="w-10 h-10 rounded-xl bg-purple-500/20 text-purple-400 flex items-center justify-center font-bold">3</div>
+                    <h3 class="font-bold text-white text-base">Uso delle API Ufficiali (Consigliato)</h3>
+                    <ul class="text-xs text-slate-300 space-y-2 leading-relaxed list-disc list-inside">
+                        <li><strong>Skyscanner Partner API:</strong> Fornisce dati sui voli live in formato JSON pulito ed esente da blocchi.</li>
+                        <li><strong>Alternative API:</strong> Servizi come <strong>Duffel API</strong> o <strong>Amadeus Self-Service API</strong> permettono di cercare e persino prenotare voli reali con poche righe di codice.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="relative z-10 border-t border-slate-800 text-center py-8 text-xs text-slate-500 space-y-1">
+        <p>â¨ Realizzato con amore per i 30 Anni di Kanza â¨</p>
+        <p class="text-[10px] text-slate-600">Kanza 30th Birthday Travel Search â¢ All rights reserved</p>
+    </footer>
+
+    <!-- JAVASCRIPT APP LOGIC -->
+    <script>
+        // 1. DYNAMIC COUNTDOWN TO MAY 22
+        function updateCountdown() {
+            const now = new Date();
+            const currentYear = now.getFullYear();
+            
+            // May is month index 4 (0-indexed)
+            let targetDate = new Date(currentYear, 4, 22, 0, 0, 0);
+
+            // If May 22 of this year has already passed, count to May 22 next year
+            if (now > targetDate) {
+                targetDate = new Date(currentYear + 1, 4, 22, 0, 0, 0);
+            }
+
+            const diff = targetDate - now;
+
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+            document.getElementById('cd-days').innerText = String(days).padStart(2, '0');
+            document.getElementById('cd-hours').innerText = String(hours).padStart(2, '0');
+            document.getElementById('cd-minutes').innerText = String(minutes).padStart(2, '0');
+            document.getElementById('cd-seconds').innerText = String(seconds).padStart(2, '0');
+
+            const options = { day: 'numeric', month: 'long', year: 'numeric' };
+            document.getElementById('target-date-display').innerText = targetDate.toLocaleDateString('it-IT', options);
+        }
+
+        setInterval(updateCountdown, 1000);
+        updateCountdown();
+
+        // 2. 4 MACRO CATEGORIES DATA
+        const trips = [
+            // Tropical Luxury & Relax
+            {
+                id: 1,
+                category: "tropical",
+                title: "Maldive Luxury Water Villa",
+                location: "Atollo di Baa, Maldive",
+                image: "https://images.unsplash.com/photo-1514282401047-d79a71a590e8?auto=format&fit=crop&w=800&q=80",
+                tag: "ðï¸ Tropical Luxury",
+                badge: "5.0 â Top Relax",
+                price: "â¬3.030",
+                description: "Bungalow sull'acqua cristallina con idromassaggio privato, cene a lume di candela sulla spiaggia e snorchel con le mante."
+            },
+            {
+                id: 2,
+                category: "tropical",
+                title: "Bali Jungle Spa & Resort",
+                location: "Ubud, Indonesia",
+                image: "https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&w=800&q=80",
+                tag: "ðï¸ Tropical Luxury",
+                badge: "4.9 â Exclusive",
+                price: "â¬1.830",
+                description: "Piscine a sfioro immerse nella giungla tropicale, massaggi ayurvedici quotidiani e colazione galleggiante riservata."
+            },
+
+            // Adventure & Discovery
+            {
+                id: 3,
+                category: "adventure",
+                title: "Giappone: Cyberpunk & Templi",
+                location: "Tokyo, Kyoto & Monte Fuji",
+                image: "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=800&q=80",
+                tag: "ð Adventure & Discovery",
+                badge: "5.0 â Bucketlist",
+                price: "â¬2.930",
+                description: "Dalle luci al neon di Shibuya ai templi silenziosi di Kyoto, viaggio in treno proiettile ed esperienza ryokan con Onsen caldi."
+            },
+            {
+                id: 4,
+                category: "adventure",
+                title: "Islanda: Vulkani & Hot Springs",
+                location: "ReykjavÃ­k & Ring Road",
+                image: "https://images.unsplash.com/photo-1504893524553-b855bce32c67?auto=format&fit=crop&w=800&q=80",
+                tag: "ð Adventure & Discovery",
+                badge: "4.8 â Wild Nature",
+                price: "â¬1.630",
+                description: "Esplorazione di geyser spaventosi, bagni termali nella celebre Blue Lagoon e trekking su ghiacciai millenari."
+            },
+
+            // Party & City Lights
+            {
+                id: 5,
+                category: "party",
+                title: "New York VIP Rooftop Experience",
+                location: "Manhattan, USA",
+                image: "https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?auto=format&fit=crop&w=800&q=80",
+                tag: "NYC Nightlife",
+                badge: "5.0 â Iconic Party",
+                price: "â¬2.430",
+                description: "Soggiorno in boutique hotel a SoHo, pass VIP per i rooftop bar piÃ¹ esclusivi di Manhattan e volo in elicottero sulla statua della LibertÃ ."
+            },
+            {
+                id: 6,
+                category: "party",
+                title: "Ibiza VIP Catamaran & Beach Club",
+                location: "Ibiza & Formentera, Spagna",
+                image: "https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=800&q=80",
+                tag: "ð Party & City",
+                badge: "4.9 â Glamour",
+                price: "â¬1.430",
+                description: "Giornate in catamarano privato verso le acque trasparenti di Formentera e tavoli riservati nei migliori beach club al tramonto."
+            },
+
+            // Gourmet & Wellness
+            {
+                id: 7,
+                category: "gourmet",
+                title: "Toscana: Relais & Degustazione Brunello",
+                location: "Val d'Orcia, Italia",
+                image: "https://images.unsplash.com/photo-1516483638261-f4dbaf036963?auto=format&fit=crop&w=800&q=80",
+                tag: "ð· Gourmet & Wellness",
+                badge: "5.0 â Luxury Taste",
+                price: "â¬930",
+                description: "Dimora storica tra i cipressi, spa privata con trattamenti al vino, corso di cucina con chef stellato e tour delle cantine."
+            },
+            {
+                id: 8,
+                category: "gourmet",
+                title: "Costa Azzurra: Yacht & Spa Resort",
+                location: "Nizza & Saint-Tropez, Francia",
+                image: "https://images.unsplash.com/photo-1533105079780-92b9be482077?auto=format&fit=crop&w=800&q=80",
+                tag: "ð· Gourmet & Wellness",
+                badge: "4.9 â Riviera Chic",
+                price: "â¬1.930",
+                description: "Aperitivi sul mare a Saint-Tropez, passeggiate a Monte Carlo e relax in una spa a cinque stelle affacciata sul Mediterraneo."
+            }
+        ];
+
+        // 3. RENDER TRIPS GRID
+        function renderTrips(data) {
+            const grid = document.getElementById('trips-grid');
+            grid.innerHTML = '';
+
+            data.forEach(trip => {
+                const card = document.createElement('div');
+                card.className = 'glass-card rounded-3xl overflow-hidden flex flex-col group';
+                card.innerHTML = `
+                    <div class="relative h-56 overflow-hidden">
+                        <img src="${trip.image}" alt="${trip.title}" class="w-full h-full object-cover group-hover:scale-110 transition duration-700 ease-out" onerror="this.src='https://placehold.co/800x600/0f172a/eab308?text=Kanza+30+Trip'">
+                        <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/20 to-transparent"></div>
+                        <span class="absolute top-3 left-3 bg-slate-950/80 backdrop-blur-md text-amber-300 text-[11px] font-bold px-3 py-1 rounded-full border border-amber-500/30">
+                            ${trip.tag}
+                        </span>
+                        <span class="absolute top-3 right-3 bg-purple-900/80 backdrop-blur-md text-purple-200 text-[11px] font-bold px-3 py-1 rounded-full border border-purple-500/30">
+                            ${trip.badge}
+                        </span>
+                        <div class="absolute bottom-3 left-4 right-4 flex justify-between items-center">
+                            <span class="text-xs text-slate-200 flex items-center gap-1.5 font-medium">
+                                <i class="fa-solid fa-location-dot text-pink-400"></i> ${trip.location}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="p-5 flex-1 flex flex-col justify-between space-y-4">
+                        <div class="space-y-2">
+                            <h3 class="font-serif font-bold text-xl text-white group-hover:text-amber-300 transition">${trip.title}</h3>
+                            <p class="text-xs text-slate-400 leading-relaxed">${trip.description}</p>
+                        </div>
+                        <div class="pt-3 border-t border-slate-800/80 flex items-center justify-between">
+                            <div>
+                                <span class="text-[10px] uppercase tracking-wider text-slate-500 block">Budget Stimato 30th</span>
+                                <span class="text-xl font-extrabold text-amber-400 font-mono">${trip.price}</span>
+                            </div>
+                            <button onclick="openItineraryModal(${trip.id})" class="px-4 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 via-pink-500 to-purple-600 hover:from-amber-400 hover:to-purple-500 text-slate-950 text-xs font-bold shadow-lg active:scale-95 transition flex items-center gap-1.5">
+                                <i class="fa-solid fa-map-location-dot"></i>
+                                <span>Crea Itinerario per Kanza</span>
+                            </button>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // 4. FILTER TRIPS
+        function filterTrips(cat) {
+            const btns = document.querySelectorAll('.pill-btn');
+            btns.forEach(b => {
+                b.classList.remove('bg-amber-500', 'text-slate-950');
+                b.classList.add('bg-slate-900', 'text-slate-300');
+            });
+
+            event.currentTarget.classList.remove('bg-slate-900', 'text-slate-300');
+            event.currentTarget.classList.add('bg-amber-500', 'text-slate-950');
+
+            if (cat === 'all') {
+                renderTrips(trips);
+            } else {
+                renderTrips(trips.filter(t => t.category === cat));
+            }
+        }
+
+        // 5. SEARCH & RADAR MODAL SIMULATION
+        function triggerSearch(e) {
+            e.preventDefault();
+            const modal = document.getElementById('radar-modal');
+            const log = document.getElementById('radar-log');
+            const progress = document.getElementById('radar-progress');
+            const selectedDest = document.getElementById('search-dest').value;
+
+            modal.classList.remove('hidden');
+
+            const steps = [
+                { text: "ð°ï¸ Inizializzazione motore di ricerca Skyscanner per Kanza30...", pct: "20%" },
+                { text: "âï¸ Scansione tariffe Business & First Class Emirates / Qatar...", pct: "45%" },
+                { text: "ð¨ Filtraggio resort luxury e boutique hotel su Booking.com...", pct: "75%" },
+                { text: "ð Generazione pacchetto esperienza per il 22 Maggio...", pct: "95%" },
+                { text: "â Trovate le migliori mete da sogno!", pct: "100%" }
+            ];
+
+            let idx = 0;
+            const timer = setInterval(() => {
+                if (idx < steps.length) {
+                    log.innerText = steps[idx].text;
+                    progress.style.width = steps[idx].pct;
+                    idx++;
+                } else {
+                    clearInterval(timer);
+                    setTimeout(() => {
+                        modal.classList.add('hidden');
+                        progress.style.width = "0%";
+                        if (selectedDest === 'all') {
+                            renderTrips(trips);
+                        } else {
+                            renderTrips(trips.filter(t => t.category === selectedDest));
+                        }
+                        document.getElementById('trips-grid').scrollIntoView({ behavior: 'smooth' });
+                    }, 400);
+                }
+            }, 600);
+        }
+
+        // 6. ITINERARY MODAL & CONFETTI
+        function openItineraryModal(id) {
+            const trip = trips.find(t => t.id === id);
+            if (!trip) return;
+
+            document.getElementById('modal-title').innerText = trip.title;
+            document.getElementById('modal-desc').innerText = trip.description;
+            document.getElementById('itinerary-modal').classList.remove('hidden');
+
+            fireConfetti();
+        }
+
+        function closeItineraryModal() {
+            document.getElementById('itinerary-modal').classList.add('hidden');
+        }
+
+        function fireConfetti() {
+            if (typeof confetti === 'function') {
+                confetti({
+                    particleCount: 120,
+                    spread: 80,
+                    origin: { y: 0.6 },
+                    colors: ['#FACC15', '#EC4899', '#A855F7', '#06B6D4', '#10B981']
+                });
+            }
+        }
+
+        // 7. PARTICLES BACKGROUND CANVAS
+        function initCanvasParticles() {
+            const canvas = document.getElementById('particles-canvas');
+            const ctx = canvas.getContext('2d');
+
+            function resize() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            }
+            resize();
+            window.addEventListener('resize', resize);
+
+            const particles = Array.from({ length: 50 }, () => ({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                size: Math.random() * 2.5 + 0.5,
+                color: ['rgba(250, 204, 21, ', 'rgba(236, 72, 153, ', 'rgba(168, 85, 247, '][Math.floor(Math.random() * 3)],
+                alpha: Math.random() * 0.6 + 0.2,
+                speedY: Math.random() * 0.5 + 0.1,
+                speedX: (Math.random() - 0.5) * 0.4
+            }));
+
+            function animate() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                particles.forEach(p => {
+                    p.y -= p.speedY;
+                    p.x += p.speedX;
+
+                    if (p.y < 0) p.y = canvas.height;
+                    if (p.x < 0) p.x = canvas.width;
+                    if (p.x > canvas.width) p.x = 0;
+
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                    ctx.fillStyle = p.color + p.alpha + ')';
+                    ctx.fill();
+                });
+
+                requestAnimationFrame(animate);
+            }
+            animate();
+        }
+
+        // INITIALIZE ON LOAD
+        window.onload = function() {
+            renderTrips(trips);
+            initCanvasParticles();
+        };
+    </script>
+</body>
+</html>
